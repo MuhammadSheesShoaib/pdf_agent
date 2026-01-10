@@ -1,0 +1,45 @@
+# Root level .gitignore
+
+# Backend - Python
+backend/venv/
+backend/env/
+backend/ENV/
+backend/.venv/
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.Python
+backend/*.so
+backend/.env
+
+# Frontend - Node.js
+frontend/node_modules/
+frontend/.npm
+frontend/.cache
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp

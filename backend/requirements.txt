@@ -1,0 +1,16 @@
+langchain
+langchain-core
+langchain-community
+langchain-groq
+langchain-huggingface
+langchain-text-splitters
+langchain-classic
+python-dotenv
+sentence-transformers
+faiss-cpu
+pypdf
+groq
+fastapi
+uvicorn
+pydantic
+python-multipart
