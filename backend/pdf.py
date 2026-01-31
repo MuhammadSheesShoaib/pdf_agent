@@ -3,14 +3,14 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
 
 load_dotenv()
-groq_api_key = os.getenv("GROQ_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 loader = PyPDFLoader("your_pdf_doc.pdf")
 documents = loader.load()
@@ -25,7 +25,7 @@ embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-
 vector_db = FAISS.from_documents(docs, embeddings)
 retriever = vector_db.as_retriever()
 
-llm = ChatGroq(model_name="llama-3.3-70b-versatile", api_key=groq_api_key)
+llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key, temperature=0)
 
 prompt = ChatPromptTemplate.from_template(
     "Use the following context to answer the question.\n\nContext: {context}\n\nQuestion: {question}"

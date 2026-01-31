@@ -11,7 +11,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
@@ -53,7 +53,7 @@ app.add_middleware(
 )
 
 # Global variables to store API keys
-groq_api_key = None
+openai_api_key = None
 hf_token = None
 
 # In-memory storage for processed PDFs (maps pdf_id to QA chain)
@@ -71,14 +71,14 @@ class QuestionRequest(BaseModel):
 class QuestionResponse(BaseModel):
     answer: str
 
-def get_groq_api_key():
-    """Get and validate Groq API key"""
-    global groq_api_key
-    if groq_api_key is None:
-        groq_api_key = os.getenv("GROQ_API_KEY")
-        if not groq_api_key:
-            raise ValueError("GROQ_API_KEY not found in environment variables")
-    return groq_api_key
+def get_openai_api_key():
+    """Get and validate OpenAI API key"""
+    global openai_api_key
+    if openai_api_key is None:
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment variables")
+    return openai_api_key
 
 def get_hf_token():
     """Get HuggingFace token for accessing transformer models"""
@@ -101,8 +101,8 @@ def create_qa_chain_from_pdf(pdf_path: str):
         logger.info(f"Starting PDF processing for: {pdf_path}")
         
         # Get API key
-        api_key = get_groq_api_key()
-        logger.info("Groq API key retrieved successfully")
+        api_key = get_openai_api_key()
+        logger.info("OpenAI API key retrieved successfully")
         
         # Load PDF document
         logger.info("Loading PDF document...")
@@ -144,8 +144,8 @@ def create_qa_chain_from_pdf(pdf_path: str):
         logger.info("Vector store created successfully")
         
         # Initialize LLM
-        logger.info("Initializing Groq LLM...")
-        llm = ChatGroq(model_name="llama-3.3-70b-versatile", api_key=api_key)
+        logger.info("Initializing OpenAI LLM...")
+        llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key, temperature=0)
         
         # Create prompt template
         prompt = ChatPromptTemplate.from_template(
@@ -307,7 +307,7 @@ async def startup_event():
     """Initialize tokens when the application starts"""
     try:
         # Pre-load tokens to verify they're available
-        get_groq_api_key()
+        get_openai_api_key()
         hf_token = get_hf_token()
         logger.info("Application startup complete")
         if hf_token:
@@ -321,11 +321,11 @@ async def startup_event():
 async def health():
     """Health check endpoint"""
     try:
-        get_groq_api_key()
+        get_openai_api_key()
         hf_token = get_hf_token()
         return {
             "status": "healthy", 
-            "groq_api_key_configured": True,
+            "openai_api_key_configured": True,
             "hf_token_configured": hf_token is not None
         }
     except Exception as e:
